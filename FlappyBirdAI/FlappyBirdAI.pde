@@ -1,26 +1,28 @@
-PVector pos, vel, pPos;
-float speed, maxSpeed, distance;
-int pHeight, score;
+Bird[] birds = new Bird[1];
+PVector pPos;
+float speed, maxSpeed;
+int pHeight, gScore;
 boolean givenScore;
 final PVector gravity = new PVector(0, 0.8);
-final int size = 50, gap = 200, pSize = 100;
+final int size = 50, gap = 200, pSize = 100, birdX = 80;
 final float jumpForce = 13;
 
 void setup() {
   size(1000, 800);
   textAlign(TOP, CENTER);
   textSize(30);
+  for (int i = 0; i < birds.length; i++)
+    birds[i] = new Bird();
   restart();
 }
 
 void draw() {
   background(100, 200, 255);
 
-  vel.add(gravity);
-  pos.add(vel);
+  for (Bird b : birds) {
+    b.update();
+  }
   pPos.x -= speed;
-  
-  distance+= speed;
 
   if (pPos.x < -pSize) {
     pPos = new PVector(width/2, 0);
@@ -30,8 +32,10 @@ void draw() {
       speed+= 0.1;
   }
 
-  if (!givenScore && pos.x - size/2 > pPos.x + pSize) {
-    score++;
+  if (!givenScore && birdX - size/2 > pPos.x + pSize) {
+    for (Bird b : birds)
+      b.updateScore();
+    gScore++;
     givenScore = true;
   }
 
@@ -40,33 +44,25 @@ void draw() {
   rect(pPos.x, 0, pSize, pHeight);
   rect(pPos.x, pHeight + gap, pSize, height - pHeight - gap);
 
-  stroke(255);
-  noFill();
-  square(pos.x - size/2, pos.y - size/2, size);
-
-  fill(255, 255, 0);
-  stroke(0);
-  circle(pos.x, pos.y, size);
+  for (Bird b : birds)
+    b.show();
 
   fill(255);
-  text(score, width/4, 10);
-
-  if (pos.x + size/2 > pPos.x && pos.x - size/2 < pPos.x + pSize)
-    if (pos.y - size/2 < pHeight || pos.y + size/2 > pHeight + gap)
-      restart();
-  if (pos.y > height)
-    restart();
+  text(gScore, width/4, 10);
 
   fill(57);
   rect(width/2, 0, width/2, height);
+
+  boolean over = true;
+  for (Bird b : birds) 
+    if (b.alive)
+      over = false;
+  if(over)
+    restart();
 }
 
 void mousePressed() {
-  jump();
-}
-
-void jump() {
-  vel = new PVector(0, -jumpForce);
+  birds[0].jump();
 }
 
 int generateHeight() {
@@ -74,13 +70,12 @@ int generateHeight() {
 }
 
 void restart() {
-  pos = new PVector(80, height/2);
-  vel = new PVector(0, 0);
+  for (Bird b : birds)
+    b.reset();
   pPos = new PVector(width/2, 0);
   speed = 3;
   maxSpeed = 7;
-  score = 0;
+  gScore = 0;
   givenScore = false;
-  distance = 0;
   pHeight = generateHeight();
 }
