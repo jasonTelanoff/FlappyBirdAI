@@ -1,20 +1,26 @@
 class Bird {
   PVector pos, vel;
-  float distance;
+  float distance, prevDistance;
   int score;
-  boolean alive;
-  
+  boolean alive, mutate;
+  AI ai;
+
   Bird() {
+    ai = new AI(0, 0, 0, 0, 0, 0, 0);
+    mutate = true;
     reset();
   }
 
   void show() {
     if (alive) {
-      stroke(255);
-      noFill();
-      square(pos.x - size/2, pos.y - size/2, size);
+      //stroke(255);
+      //noFill();
+      //square(pos.x - size/2, pos.y - size/2, size);
 
-      fill(255, 255, 0);
+      if (mutate)
+        fill(255, 255, 0);
+      else
+        fill(255, 0, 0);
       stroke(0);
       circle(pos.x, pos.y, size);
     }
@@ -31,6 +37,8 @@ class Bird {
           alive = false;
       if (pos.y > height)
         alive = false;
+
+      if (ai.shouldJump(pos, vel)) jump();
     }
   }
 
@@ -43,10 +51,15 @@ class Bird {
   }
 
   void reset() {
+    prevDistance = distance;
     pos = new PVector(birdX, height/2);
     vel = new PVector(0, 0);
     alive = true;
     score = 0;
     distance = 0;
+  }
+
+  void mutate() {
+    ai.mutate();
   }
 }

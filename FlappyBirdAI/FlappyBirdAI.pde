@@ -1,4 +1,5 @@
-Bird[] birds = new Bird[1];
+Bird[] birds = new Bird[100];
+AI[] prevBestAIs = new AI[10];
 PVector pPos;
 float speed, maxSpeed;
 int pHeight, gScore;
@@ -57,7 +58,7 @@ void draw() {
   for (Bird b : birds) 
     if (b.alive)
       over = false;
-  if(over)
+  if (over)
     restart();
 }
 
@@ -70,8 +71,50 @@ int generateHeight() {
 }
 
 void restart() {
-  for (Bird b : birds)
-    b.reset();
+  float[] bestDists = new float[10];
+  int[] bestBirds = new int[10];
+  AI[] bestAIs = new AI[10];
+  for (int i = 0; i < bestBirds.length; i++) {
+    bestDists[i] = 0;
+    bestBirds[0] = -1;
+  }
+  for (int i = 0; i < bestBirds.length; i++) {
+    float bestDist = 0;
+    int bestBird = 0;
+
+    for (int b = 0; b < birds.length; b++) {
+      if (birds[b].distance > bestDist) {
+        boolean good = true;
+        for (int j = 0; j < bestBirds.length; j++) {
+          if (bestBirds[j] == b)
+            good = false;
+        }
+        if (good) {
+          bestDist = birds[b].distance;
+          bestBird = b;
+        }
+      }
+    }
+
+    bestDists[i] = bestDist;
+    bestBirds[i] = bestBird;
+    bestAIs[i] = birds[bestBird].ai.copy();
+    prevBestAIs[i] = birds[bestBird].ai.copy();
+  }
+
+  for (int i = 0; i < birds.length - 10; i++) {
+    birds[i].ai = bestAIs[floor(i/9)];
+    birds[i].reset();
+    birds[i].mutate();
+    birds[i].mutate = true;
+  }
+  
+  for (int i = 0; i < 10; i++) {
+    birds[i].ai = bestAIs[i];
+    birds[i].reset();
+    birds[i].mutate = false;
+  }
+  
   pPos = new PVector(width/2, 0);
   speed = 3;
   maxSpeed = 7;
