@@ -1,10 +1,10 @@
 class AI {
-  double[] factors = new double[7];
+  double[] factors = new double[facNum];
 
   AI(double[] _factors) {
     factors = _factors;
   }
-  
+
   AI copy() {
     return new AI(factors.clone());
   }
@@ -18,12 +18,14 @@ class AI {
     score+= speed * factors[4];
     score+= (pPos.y - pos.y) * factors[5];
     score+= (pPos.x - pos.x) * factors[6];
+    score+= (pos.y/height) * factors[7];
     if (score > 100)
       return true;
     return false;
   }
 
   void mutate() {
-    factors[floor(random(7))]+= random(-0.1, 0.1);
+    for (int i = 0; i < 10; i++)
+      factors[floor(random(factors.length))]+= random(-.5, .5);
   }
 }

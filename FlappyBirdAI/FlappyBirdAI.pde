@@ -1,19 +1,24 @@
-Bird[] birds = new Bird[100];
-AI bestAI = new AI(new double[7]);
+Bird[] birds;
+AI bestAI;
 PVector pPos;
 float speed, maxSpeed;
 int pHeight, gScore, generation = 0;
 boolean givenScore;
 final PVector gravity = new PVector(0, 0.8);
-final int size = 50, gap = 200, pSize = 100, birdX = 80;
+final int size = 50, gap = 200, pSize = 100, birdX = 80, facNum = 8;
 final float jumpForce = 13;
 
 void setup() {
   size(1000, 800);
   frameRate(1200);
 
+  birds = new Bird[100];
+  
   for (int i = 0; i < birds.length; i++)
     birds[i] = new Bird();
+    
+  bestAI = new AI(new double[facNum]);
+  
   restart();
 }
 
@@ -61,11 +66,11 @@ void draw() {
   textSize(30);
   fill(255);
   text("Generation : " + generation, 550, 50);
-  
+
   fill(255);
   rect(510, 90, 480, 500);
   for (int i = 0; i < bestAI.factors.length; i++) {
-    strokeWeight((int) bestAI.factors[i]);
+    strokeWeight(abs((int) bestAI.factors[i]));
     stroke(bestAI.factors[i] > 0?#0000ff:#ff0000);
     if (bestAI.factors[i] > 0)
       line(550, 150 + i * 50, 950, 300);
@@ -81,7 +86,10 @@ void draw() {
 }
 
 void mousePressed() {
-  birds[0].jump();
+  for (int i = 0; i < bestAI.factors.length; i++) {
+    print(bestAI.factors[i] + ", ");
+  }
+  println();
 }
 
 int generateHeight() {

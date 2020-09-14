@@ -6,10 +6,8 @@ class Bird {
   AI ai;
 
   Bird() {
-    double[] zeros = new double[7];
-    for(int i = 0; i < zeros.length; i++)
-      zeros[i] = 0;
-    ai = new AI(zeros);
+    double[] initFacs = {0, 0, 0, 0, 0, 0, 0, 0};
+    ai = new AI(initFacs);
     mutate = true;
     reset();
   }
