@@ -6,7 +6,10 @@ class Bird {
   AI ai;
 
   Bird() {
-    ai = new AI(0, 0, 0, 0, 0, 0, 0);
+    double[] zeros = new double[7];
+    for(int i = 0; i < zeros.length; i++)
+      zeros[i] = 0;
+    ai = new AI(zeros);
     mutate = true;
     reset();
   }
@@ -22,6 +25,7 @@ class Bird {
       else
         fill(255, 0, 0);
       stroke(0);
+      strokeWeight(1);
       circle(pos.x, pos.y, size);
     }
   }

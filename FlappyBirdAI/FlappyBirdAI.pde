@@ -1,8 +1,8 @@
 Bird[] birds = new Bird[100];
-AI[] prevBestAIs = new AI[10];
+AI bestAI = new AI(new double[7]);
 PVector pPos;
 float speed, maxSpeed;
-int pHeight, gScore;
+int pHeight, gScore, generation = 0;
 boolean givenScore;
 final PVector gravity = new PVector(0, 0.8);
 final int size = 50, gap = 200, pSize = 100, birdX = 80;
@@ -10,8 +10,8 @@ final float jumpForce = 13;
 
 void setup() {
   size(1000, 800);
-  textAlign(TOP, CENTER);
-  textSize(30);
+  frameRate(1200);
+
   for (int i = 0; i < birds.length; i++)
     birds[i] = new Bird();
   restart();
@@ -41,6 +41,7 @@ void draw() {
   }
 
   stroke(0);
+  strokeWeight(1);
   fill(20, 130, 30);
   rect(pPos.x, 0, pSize, pHeight);
   rect(pPos.x, pHeight + gap, pSize, height - pHeight - gap);
@@ -49,10 +50,27 @@ void draw() {
     b.show();
 
   fill(255);
+  textAlign(TOP, CENTER);
+  textSize(30);
   text(gScore, width/4, 10);
 
   fill(57);
   rect(width/2, 0, width/2, height);
+
+  textAlign(BOTTOM, LEFT);
+  textSize(30);
+  fill(255);
+  text("Generation : " + generation, 550, 50);
+  
+  fill(255);
+  rect(510, 90, 480, 500);
+  for (int i = 0; i < bestAI.factors.length; i++) {
+    strokeWeight((int) bestAI.factors[i]);
+    stroke(bestAI.factors[i] > 0?#0000ff:#ff0000);
+    if (bestAI.factors[i] > 0)
+      line(550, 150 + i * 50, 950, 300);
+  }
+
 
   boolean over = true;
   for (Bird b : birds) 
@@ -99,26 +117,27 @@ void restart() {
     bestDists[i] = bestDist;
     bestBirds[i] = bestBird;
     bestAIs[i] = birds[bestBird].ai.copy();
-    prevBestAIs[i] = birds[bestBird].ai.copy();
   }
+  bestAI = birds[bestBirds[0]].ai.copy();
 
-  for (int i = 0; i < birds.length - 10; i++) {
-    birds[i].ai = bestAIs[floor(i/9)];
+  for (int i = 0; i < 90; i++) {
+    birds[i].ai = bestAIs[i/9].copy();
     birds[i].reset();
     birds[i].mutate();
     birds[i].mutate = true;
   }
-  
+
   for (int i = 0; i < 10; i++) {
     birds[i].ai = bestAIs[i];
     birds[i].reset();
     birds[i].mutate = false;
   }
-  
+
   pPos = new PVector(width/2, 0);
   speed = 3;
   maxSpeed = 7;
   gScore = 0;
   givenScore = false;
   pHeight = generateHeight();
+  generation++;
 }

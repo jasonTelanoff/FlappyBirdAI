@@ -1,59 +1,29 @@
 class AI {
-  double birdY, birdVel, pipeX, pipeH, speedF, yDif, xDif;
+  double[] factors = new double[7];
 
-  AI(double _birdY, double _birdVel, double _pipeX, double _pipeH, double _speedF, double _yDif, double _xDif) {
-    birdY = _birdY;
-    birdVel = _birdVel;
-    pipeX = _pipeX;
-    pipeH = _pipeH;
-    speedF = _speedF;
-    yDif = _yDif;
-    xDif = _xDif;
+  AI(double[] _factors) {
+    factors = _factors;
   }
   
   AI copy() {
-    return new AI(birdY, birdVel, pipeX, pipeH, speedF, yDif, xDif);
+    return new AI(factors.clone());
   }
 
   boolean shouldJump(PVector pos, PVector vel) {    
     int score = 0;
-    score+= pos.y * birdY;
-    score+= vel.x * birdVel;
-    score+= pPos.x * pipeX;
-    score+= pPos.y * pipeH;
-    score+= speed * speedF;
-    score+= (pPos.y - pos.y) * yDif;
-    score+= (pPos.x - pos.x) * xDif;
+    score+= pos.y * factors[0];
+    score+= vel.x * factors[1];
+    score+= pPos.x * factors[2];
+    score+= pPos.y * factors[3];
+    score+= speed * factors[4];
+    score+= (pPos.y - pos.y) * factors[5];
+    score+= (pPos.x - pos.x) * factors[6];
     if (score > 100)
       return true;
     return false;
   }
 
   void mutate() {
-    int mutated = floor(random(7));
-    double amountMutated = random(-0.1, 0.1);
-    switch(mutated) {
-    case 0:
-      birdY+= amountMutated;
-      break;
-    case 1:
-      birdVel+= amountMutated;
-      break;
-    case 2:
-      pipeX+= amountMutated;
-      break;
-    case 3:
-      pipeH+= amountMutated;
-      break;
-    case 4:
-      speedF+= amountMutated;
-      break;
-    case 5:
-      yDif+= amountMutated;
-      break;
-    case 6:
-      xDif+= amountMutated;
-      break;
-    }
+    factors[floor(random(7))]+= random(-0.1, 0.1);
   }
 }
